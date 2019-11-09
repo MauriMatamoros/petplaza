@@ -9,25 +9,29 @@ import AccountPermissions from '../components/Account/AccountPermissions'
 import AccountInformation from '../components/Account/AccountInformation'
 import ChangePassword from '../components/Account/ChangePassword'
 import DoctorInformation from '../components/Account/DoctorInformation'
+import Spinner from '../components/Spinner/Spinner'
 import baseUrl from '../utils/baseUrl'
 import { setProfile } from '../redux/actions/profile'
 
-const Account = ({ user, orders, setProfile, name, loading }) => {
+const Account = ({ user, orders, setProfile, loading }) => {
 	const isRoot = user.role === 'root'
 	const isDoctor = user.role === 'doctor'
 	const isRootOrDoctor = isRoot || isDoctor
 
-	useEffect(() => setProfile({ ...user }), [setProfile])
-	return (
+	useEffect(() => {
+		setProfile({ ...user })
+	}, [setProfile])
+	return !loading ? (
 		<>
-			{!loading ? <p>{name}</p> : <p>loading</p>}
-			<AccountHeader {...user} />
+			<AccountHeader />
 			<AccountInformation />
 			<ChangePassword />
 			{isRootOrDoctor && <DoctorInformation />}
 			<AccountOrders orders={orders} />
 			{isRoot && <AccountPermissions currentUserId={user._id} />}
 		</>
+	) : (
+		<Spinner />
 	)
 }
 
@@ -45,8 +49,8 @@ Account.getInitialProps = async (ctx) => {
 	}
 }
 
-const mapStateToProps = ({ profile }) => ({
-	...profile
+const mapStateToProps = ({ profile: { loading } }) => ({
+	loading
 })
 
 export default connect(

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import cookie from 'js-cookie'
-import { Header, Checkbox, Table, Icon } from 'semantic-ui-react'
+import { Header, Table, Icon } from 'semantic-ui-react'
 
 import baseUrl from '../../utils/baseUrl'
 import UserPermission from './UserPermission'

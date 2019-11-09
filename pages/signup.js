@@ -35,7 +35,7 @@ const Signup = () => {
 	}
 
 	const handleBirthdayChange = (date) => {
-		setPet((prevState) => ({ ...prevState, birthday: date }))
+		setUser((prevState) => ({ ...prevState, birthday: date }))
 	}
 
 	const handleSubmit = async (e) => {

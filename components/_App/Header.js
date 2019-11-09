@@ -2,10 +2,12 @@ import { Icon, Image, Menu } from 'semantic-ui-react'
 import Link from 'next/link'
 import Router, { useRouter } from 'next/router'
 import NProgress from 'nprogress'
+import { connect } from 'react-redux'
 
 import { handleLogout } from '../../utils/auth'
+import { logout } from '../../redux/actions/profile'
 
-const Header = ({ user }) => {
+const Header = ({ user, logout }) => {
 	const router = useRouter()
 	const isActive = (route) => route === router.pathname
 	const isRoot = user && user.role === 'root'
@@ -16,6 +18,10 @@ const Header = ({ user }) => {
 	Router.onRouteChangeComplete = () => NProgress.done()
 	Router.onRouteChangeError = () => NProgress.done()
 
+	const onLogout = () => {
+		handleLogout()
+		logout()
+	}
 	return (
 		<Menu fluid id='menu' inverted stackable>
 			<Link href='/'>
@@ -70,7 +76,7 @@ const Header = ({ user }) => {
 							Account
 						</Menu.Item>
 					</Link>
-					<Menu.Item header onClick={handleLogout}>
+					<Menu.Item header onClick={onLogout}>
 						<Icon name='sign out' size='large' />
 						Logout
 					</Menu.Item>
@@ -95,4 +101,7 @@ const Header = ({ user }) => {
 	)
 }
 
-export default Header
+export default connect(
+	null,
+	{ logout }
+)(Header)

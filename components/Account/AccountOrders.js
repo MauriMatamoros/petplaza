@@ -68,7 +68,7 @@ const AccountOrders = ({ orders }) => {
 						No past orders.
 					</Header>
 					<div>
-						<Button onClick={() => router.push('/')} color='orange'>
+						<Button onClick={() => router.push('/')} primary>
 							View Products
 						</Button>
 					</div>
