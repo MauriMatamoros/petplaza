@@ -34,7 +34,19 @@ router.get('/users', auth, async (req, res) => {
 		})
 		res.status(200).json(users)
 	} catch (error) {
-		console.log('dist')
+		console.error(error)
+		res.status(403).send('Please log in again.')
+	}
+})
+
+router.get('/users/doctors', auth, async (req, res) => {
+	try {
+		const doctors = await User.find({ role: 'doctor' })
+		if (!doctors) {
+			return res.status(200).json([])
+		}
+		res.status(200).json(doctors)
+	} catch (error) {
 		console.error(error)
 		res.status(403).send('Please log in again.')
 	}

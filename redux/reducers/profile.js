@@ -4,7 +4,8 @@ import {
 	UPDATE_PROFILE,
 	START_UPDATE_PROFILE,
 	PROFILE_ERROR,
-	UPDATE_DOCTOR_PROFILE
+	UPDATE_DOCTOR_PROFILE,
+	SET_PROFILE_PICTURE
 } from '../actions/types'
 
 const initialState = {
@@ -33,6 +34,8 @@ export default (state = initialState, action) => {
 			return {
 				...state,
 				...payload,
+				success: false,
+				error: null,
 				loading: false
 			}
 		case START_UPDATE_PROFILE:
@@ -58,6 +61,12 @@ export default (state = initialState, action) => {
 				loadingForm: false,
 				error: payload,
 				success: false
+			}
+		}
+		case SET_PROFILE_PICTURE: {
+			return {
+				...state,
+				profilePicture: payload
 			}
 		}
 		case LOGOUT:

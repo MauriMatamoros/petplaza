@@ -1,9 +1,11 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
+const axios = require('axios')
 
 const User = require('../../models/User')
 const connectDb = require('../../../utils/connectDb')
 const auth = require('../../middleware/auth')
+const cloudinary = require('../../../utils/cloudinary')
 
 connectDb()
 
@@ -63,7 +65,7 @@ router.put('/account/changePassword', auth, async (req, res) => {
 		const passwordsMatch = await bcrypt.compare(currentPassword, user.password)
 		if (passwordsMatch) {
 			const hash = await bcrypt.hash(newPassword, 10)
-			const user = await User.findOneAndUpdate(
+			await User.findOneAndUpdate(
 				{ _id: req.user._id },
 				{ password: hash },
 				{ new: true }
@@ -74,6 +76,26 @@ router.put('/account/changePassword', auth, async (req, res) => {
 		}
 	} catch (error) {
 		res.status(403).send('Invalid token.')
+	}
+})
+
+router.put('/account/profilePicture', auth, async (req, res) => {
+	try {
+		const { profilePicture } = req.body
+		const user = await User.findById(req.user._id)
+		if (!user.profilePicture) {
+			const user = await User.findOneAndUpdate(
+				{ _id: req.user._id },
+				{ profilePicture },
+				{ new: true }
+			)
+			return res.send(201).send(user.profilePicture)
+		}
+		console.log(user.profilePicture.split('/'))
+	} catch (error) {
+		res
+			.status(500)
+			.send('Server error. Please try setting your profile picture later.')
 	}
 })
 

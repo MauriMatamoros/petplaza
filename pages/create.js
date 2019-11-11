@@ -20,6 +20,7 @@ const CreateProduct = () => {
 		name: '',
 		description: '',
 		price: '',
+		inStock: '',
 		media: ''
 	}
 	const [product, setProduct] = useState(INITIAL_PRODUCT)
@@ -67,12 +68,12 @@ const CreateProduct = () => {
 			setError('')
 			const mediaUrl = await handleImageUpload()
 			const url = `${baseUrl}/api/product`
-			const { name, price, description } = product
+			const { name, price, description, inStock } = product
 			const token = cookie.get('token')
 			const headers = {
 				headers: { Authorization: token }
 			}
-			const payload = { name, price, description, mediaUrl }
+			const payload = { name, price, description, mediaUrl, inStock }
 			const { data } = await axios.post(url, payload, headers)
 			setProduct(INITIAL_PRODUCT)
 			setSuccess(true)
@@ -134,6 +135,18 @@ const CreateProduct = () => {
 						onChange={handleChange}
 					/>
 				</Form.Group>
+				<Form.Field
+					control={Input}
+					name='inStock'
+					label='In Stock'
+					placeholder='In Stock'
+					type='text'
+					min='0'
+					step='1'
+					type='number'
+					onChange={handleChange}
+					value={product.inStock}
+				/>
 				<Image src={mediaPreview} rounded centered size='small' />
 				<Form.Field
 					control={TextArea}

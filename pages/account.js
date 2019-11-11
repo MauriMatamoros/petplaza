@@ -9,6 +9,7 @@ import AccountPermissions from '../components/Account/AccountPermissions'
 import AccountInformation from '../components/Account/AccountInformation'
 import ChangePassword from '../components/Account/ChangePassword'
 import DoctorInformation from '../components/Account/DoctorInformation'
+import Uploader from '../components/Account/Uploader'
 import Spinner from '../components/Spinner/Spinner'
 import baseUrl from '../utils/baseUrl'
 import { setProfile } from '../redux/actions/profile'
@@ -24,6 +25,7 @@ const Account = ({ user, orders, setProfile, loading }) => {
 	return !loading ? (
 		<>
 			<AccountHeader />
+			<Uploader />
 			<AccountInformation />
 			<ChangePassword />
 			{isRootOrDoctor && <DoctorInformation />}

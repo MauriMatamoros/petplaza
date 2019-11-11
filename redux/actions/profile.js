@@ -6,7 +6,8 @@ import {
 	UPDATE_PROFILE,
 	PROFILE_ERROR,
 	START_UPDATE_PROFILE,
-	UPDATE_DOCTOR_PROFILE
+	UPDATE_DOCTOR_PROFILE,
+	SET_PROFILE_PICTURE
 } from './types'
 import baseUrl from '../../utils/baseUrl'
 
@@ -49,3 +50,9 @@ export const updateDoctorProfile = (user, token) => async (dispatch) => {
 		})
 	}
 }
+
+export const setProfilePicture = (payload) => (dispatch) =>
+	dispatch({
+		type: SET_PROFILE_PICTURE,
+		payload
+	})

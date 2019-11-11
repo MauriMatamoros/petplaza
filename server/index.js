@@ -10,6 +10,8 @@ if (process.env.NODE_ENV !== 'production') {
 	require('dotenv').config()
 }
 
+require('../utils/cloudinary')
+
 app.prepare().then(() => {
 	const server = express()
 	server.use(express.json({ extended: false }))

@@ -1,18 +1,29 @@
-import { Header, Icon, Segment, Label } from 'semantic-ui-react'
+import { Header, Icon, Segment, Label, Image } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 
 import formatDate from '../../utils/formatDate'
 
-const AccountHeader = ({ role, email, name, createdAt, id }) => {
+const AccountHeader = ({
+	role,
+	email,
+	name,
+	createdAt,
+	id,
+	profilePicture
+}) => {
 	return (
 		<Segment secondary inverted>
-			<Label
-				size='large'
-				ribbon
-				icon='privacy'
-				style={{ textTransform: 'capitalize' }}
-				content={role}
-			/>
+			{profilePicture ? (
+				<Image src={profilePicture} size='medium' circular />
+			) : (
+				<Label
+					size='large'
+					ribbon
+					icon='privacy'
+					style={{ textTransform: 'capitalize' }}
+					content={role}
+				/>
+			)}
 			<Header inverted textAlign='center' as='h1' icon>
 				<Icon name='user' />
 				{name}
@@ -25,13 +36,14 @@ const AccountHeader = ({ role, email, name, createdAt, id }) => {
 }
 
 const mapStateToProps = ({
-	profile: { role, name, email, createdAt, id }
+	profile: { role, name, email, createdAt, id, profilePicture }
 }) => ({
 	role,
 	name,
 	email,
 	createdAt,
-	id
+	id,
+	profilePicture
 })
 
 export default connect(mapStateToProps)(AccountHeader)

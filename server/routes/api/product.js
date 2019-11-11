@@ -33,7 +33,7 @@ router.delete('/product/:_id', auth, async (req, res) => {
 
 router.post('/product', auth, async (req, res) => {
 	try {
-		const { name, price, description, mediaUrl } = req.body
+		const { name, price, description, mediaUrl, inStock } = req.body
 		if (!name || !price || !description || !mediaUrl) {
 			return res.status(422).send('Product missing one or more fields')
 		}
@@ -44,7 +44,8 @@ router.post('/product', auth, async (req, res) => {
 			name,
 			price,
 			description,
-			mediaUrl
+			mediaUrl,
+			inStock
 		}).save()
 		res.status(201).json({ product })
 	} catch (error) {
