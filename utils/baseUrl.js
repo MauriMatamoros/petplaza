@@ -3,4 +3,4 @@ const baseUrl =
 		? 'http://157.245.135.246:3000'
 		: 'http://localhost:3000'
 
-export default baseUrl
+module.exports = baseUrl

@@ -13,25 +13,57 @@ const router = express.Router()
 
 router.post('/pet', auth, async (req, res) => {
 	try {
-		const { name, breed, color, profilePicture, gender, birthday } = req.body
-		if (!name || !breed || !color || !profilePicture || !gender || !birthday) {
-			return res.status(422).send('Product missing one or more fields')
+		const { name, breed, color, gender, birthday } = req.body
+		if (!name || !breed || !color || !gender || !birthday) {
+			return res.status(422).send('Pet missing one or more fields')
 		}
-		if (!(req.user.role === 'user')) {
-			return res.status(401).send('Not enough privilages')
-		}
+		const owner = req.user._id
 		const pet = await new Pet({
 			name,
 			breed,
 			color,
-			profilePicture,
 			gender,
-			birthday
+			birthday,
+			owner
 		}).save()
 		res.status(201).json({ pet })
 	} catch (error) {
 		console.error(error)
 		res.status(500).send('Server error.')
+	}
+})
+
+router.get('/pets', auth, async (req, res) => {
+	try {
+		const pets = await Pet.find({ owner: req.user._id })
+		res.status(201).json(pets)
+	} catch (error) {
+		console.error(error)
+		res.status(500).send('Server error.')
+	}
+})
+
+router.get('/pet/:_id', async (req, res) => {
+	try {
+		const pet = await Pet.findById(req.params._id)
+		res.status(201).json(pet)
+	} catch (error) {
+		console.error(error)
+		res.status(500).send('Server error.')
+	}
+})
+
+router.put('/pet/:_id', auth, async (req, res) => {
+	try {
+		const { name, breed, color, gender, birthday } = req.body
+		const pet = await Pet.findOneAndUpdate(
+			{ _id: req.params._id, owner: req.user._id },
+			{ name, breed, color, gender, birthday },
+			{ new: true }
+		)
+		res.status(201).json(pet)
+	} catch (error) {
+		res.status(403).send('Invalid token.')
 	}
 })
 

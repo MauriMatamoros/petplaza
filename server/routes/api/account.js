@@ -1,13 +1,16 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
-const axios = require('axios')
+const uuid = require('uuid/v1')
+const sgMail = require('@sendgrid/mail')
 
 const User = require('../../models/User')
 const connectDb = require('../../../utils/connectDb')
 const auth = require('../../middleware/auth')
 const cloudinary = require('../../../utils/cloudinary')
+const baseUrl = require('../../../utils/baseUrl')
 
 connectDb()
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const router = express.Router()
 
@@ -96,6 +99,55 @@ router.put('/account/profilePicture', auth, async (req, res) => {
 		res
 			.status(500)
 			.send('Server error. Please try setting your profile picture later.')
+	}
+})
+
+router.post('/account/recoverPassword', async (req, res) => {
+	try {
+		const { email } = req.body
+		if (!email) {
+			return res.status(404).send('No email was recieved.')
+		}
+		const user = await User.findOne({ email })
+		if (!user) {
+			return res.status(404).send('Email did not match one in our archives.')
+		}
+		const resetToken = uuid()
+		await User.findOneAndUpdate({ email }, { resetToken })
+		const msg = {
+			to: user.email,
+			from: 'petplaza@example.com',
+			subject: 'Password Reset',
+			text: 'Click the link below to reset your password',
+			html: `<a href='${baseUrl}/resetPassword/${resetToken}'>Reset Password</a>`
+		}
+		await sgMail.send(msg)
+		res.status(200).send('Email sent.')
+	} catch (error) {
+		res
+			.status(500)
+			.send('Server error. Please try reseting your password later.')
+	}
+})
+
+router.post('/account/resetPassword', async (req, res) => {
+	try {
+		const { resetToken, newPassword } = req.body
+		const user = await User.findOne({ resetToken })
+		if (!user) {
+			return res.status(401).send('Not a valid token.')
+		}
+		const hash = await bcrypt.hash(newPassword, 10)
+		await User.findOneAndUpdate(
+			{ resetToken },
+			{ resetToken: null, password: hash }
+		)
+		res.send(200).send('Password reset was successful.')
+	} catch (error) {
+		console.log(error)
+		res
+			.status(500)
+			.send('Server error. Please try reseting your password later.')
 	}
 })
 

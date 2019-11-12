@@ -53,6 +53,10 @@ const UserSchema = new mongoose.Schema(
 		},
 		youtube: {
 			type: String
+		},
+		resetToken: {
+			type: String,
+			default: null
 		}
 	},
 	{

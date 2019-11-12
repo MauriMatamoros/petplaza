@@ -3,23 +3,34 @@ import axios from 'axios'
 import { Form, Input, Button, Message, Header, Icon } from 'semantic-ui-react'
 import cookie from 'js-cookie'
 import DatePicker from 'react-datepicker'
+import { connect } from 'react-redux'
 
-import baseUrl from '../utils/baseUrl'
-import catchErrors from '../utils/catchErrors'
+import baseUrl from '../../utils/baseUrl'
+import catchErrors from '../../utils/catchErrors'
+import { setPet } from '../../redux/actions/pet'
 
-const CreatePet = () => {
+const Pet = ({
+	name,
+	gender,
+	birthday,
+	color,
+	breed,
+	loading,
+	success,
+	error
+}) => {
 	const INITIAL_PET = {
-		name: '',
-		gender: '',
-		birthday: new Date(),
-		color: '',
-		breed: ''
+		name,
+		gender,
+		birthday,
+		color,
+		breed,
+		loading,
+		success,
+		error
 	}
 	const [pet, setPet] = useState(INITIAL_PET)
-	const [success, setSuccess] = useState(false)
-	const [loading, setLoading] = useState(false)
 	const [disabled, setDisabled] = useState(true)
-	const [error, setError] = useState('')
 
 	useEffect(() => {
 		const isPet = Object.values(pet).every((element) => Boolean(element))
@@ -70,7 +81,7 @@ const CreatePet = () => {
 		<>
 			<Header as='h2' block>
 				<Icon name='add' color='orange' />
-				Add Pet
+				Edit Pet
 			</Header>
 			<Form
 				loading={loading}
@@ -82,7 +93,7 @@ const CreatePet = () => {
 					success
 					icon='check'
 					header='Success!'
-					content='Your pet has been posted.'
+					content='Your pet has been updated.'
 				/>
 				<Message error header='Oops!' content={error} />
 				<Form.Group widths='equal'>
@@ -118,7 +129,7 @@ const CreatePet = () => {
 					<div className='field'>
 						<label>Birthday</label>
 						<DatePicker
-							selected={pet.birthday}
+							selected={Date.parse(pet.birthday)}
 							onChange={handleBirthdayChange}
 							peekNextMonth
 							showMonthDropdown
@@ -151,7 +162,7 @@ const CreatePet = () => {
 					control={Button}
 					color='blue'
 					icon='pencil alternate'
-					content='Submit'
+					content='Edit'
 					type='submit'
 					disabled={disabled || loading}
 				/>
@@ -160,4 +171,27 @@ const CreatePet = () => {
 	)
 }
 
-export default CreatePet
+Pet.getInitialProps = async ({ reduxStore: { dispatch }, query: { _id } }) => {
+	const url = `${baseUrl}/api/pet/${_id}`
+	const { data } = await axios.get(url)
+	dispatch(setPet(data))
+	return {}
+}
+
+const mapStateToProps = ({
+	pet: { name, color, breed, gender, birthday, loading, success, error }
+}) => ({
+	name,
+	color,
+	breed,
+	gender,
+	birthday,
+	loading,
+	success,
+	error
+})
+
+export default connect(
+	mapStateToProps,
+	{ setPet }
+)(Pet)

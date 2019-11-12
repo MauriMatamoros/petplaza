@@ -94,7 +94,10 @@ const Login = () => {
 				<Link href='/signup'>
 					<a>Sign up here</a>
 				</Link>{' '}
-				instead
+				instead.{' '}
+				<Link href='/recoverPassword'>
+					<a>Forgot your password?</a>
+				</Link>
 			</Message>
 		</>
 	)

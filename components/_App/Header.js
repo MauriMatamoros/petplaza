@@ -48,10 +48,16 @@ const Header = ({ user, logout }) => {
 							Create
 						</Menu.Item>
 					</Link>
-					<Link href='/create'>
+					<Link href='/orders'>
 						<Menu.Item header active={isActive('/orders')}>
 							<Icon name='shipping' size='large' />
 							Orders
+						</Menu.Item>
+					</Link>
+					<Link href='/search'>
+						<Menu.Item header active={isActive('/orders')}>
+							<Icon name='user' size='large' />
+							Search Patients
 						</Menu.Item>
 					</Link>
 				</>
@@ -61,7 +67,7 @@ const Header = ({ user, logout }) => {
 					<Link href='/pets'>
 						<Menu.Item header active={isActive('/pets')}>
 							<Icon name='paw' size='large' />
-							Pets
+							My Pets
 						</Menu.Item>
 					</Link>
 					<Link href='/book'>

@@ -5,7 +5,8 @@ const { ObjectId, String } = mongoose.Schema.Types
 const PetSchema = new mongoose.Schema({
 	owner: {
 		type: ObjectId,
-		ref: 'User'
+		ref: 'User',
+		required: true
 	},
 	name: {
 		type: String,
