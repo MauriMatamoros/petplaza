@@ -6,4 +6,18 @@ cloudinary.config({
 	api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-module.exports = cloudinary
+const deleteImage = (mediaUrl) =>
+	new Promise((resolve, reject) => {
+		const id = mediaUrl
+			.split('/')
+			.pop()
+			.split('.')[0]
+		cloudinary.uploader.destroy(id, (error, result) => {
+			if (error) return reject(error)
+			return resolve(result)
+		})
+	})
+
+module.exports = {
+	deleteImage
+}

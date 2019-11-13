@@ -78,6 +78,7 @@ const CreateProduct = () => {
 			setProduct(INITIAL_PRODUCT)
 			setSuccess(true)
 		} catch (error) {
+			console.error(error)
 			catchErrors(error, setError)
 		} finally {
 			setLoading(false)

@@ -2,9 +2,10 @@ const express = require('express')
 
 const Product = require('../../models/Product')
 const Cart = require('../../models/Cart')
+const Order = require('../../models/Order')
 const auth = require('../../middleware/auth')
-
 const connectDb = require('../../../utils/connectDb')
+const { deleteImage } = require('../../../utils/cloudinary')
 
 connectDb()
 
@@ -24,6 +25,11 @@ router.delete('/product/:_id', auth, async (req, res) => {
 			{ 'products.product': _id },
 			{ $pull: { products: { product: _id } } }
 		)
+		await Order.updateMany(
+			{ 'products.product': _id },
+			{ $pull: { products: { product: _id } } }
+		)
+		await deleteImage(product.mediaUrl)
 		res.status(204).json({ product })
 	} catch (error) {
 		console.error(error)

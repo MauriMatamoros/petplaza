@@ -2,6 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { Button, Header, Modal } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
+import cookie from 'js-cookie'
 
 import baseUrl from '../../utils/baseUrl'
 
@@ -14,7 +15,11 @@ const ProductAttributes = ({ _id, description, user }) => {
 	const router = useRouter()
 	const handleDelete = async () => {
 		const url = `${baseUrl}/api/product/${_id}`
-		await axios.delete(url)
+		const token = cookie.get('token')
+		const payload = {
+			headers: { Authorization: token }
+		}
+		await axios.delete(url, payload)
 		router.push('/')
 	}
 	return (
