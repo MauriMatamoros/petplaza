@@ -124,6 +124,7 @@ router.post('/account/recoverPassword', async (req, res) => {
 		await sgMail.send(msg)
 		res.status(200).send('Email sent.')
 	} catch (error) {
+		console.log(error)
 		res
 			.status(500)
 			.send('Server error. Please try reseting your password later.')

@@ -3,11 +3,12 @@ import { Button, Form, Message, Segment } from 'semantic-ui-react'
 import axios from 'axios'
 
 import baseUrl from '../utils/baseUrl'
+import catchErrors from '../utils/catchErrors'
 
 const RecoverPassword = () => {
 	const [email, setEmail] = useState('')
 	const [success, setSuccess] = useState(false)
-	const [error, setError] = useState(false)
+	const [error, setError] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [disabled, setDisabled] = useState(true)
 
@@ -31,7 +32,8 @@ const RecoverPassword = () => {
 			await axios.post(url, payload)
 			setSuccess(true)
 		} catch (error) {
-			setError(error.response.data)
+			console.log(error)
+			catchErrors(error, setError)
 		} finally {
 			setLoading(false)
 		}
