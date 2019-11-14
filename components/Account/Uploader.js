@@ -8,7 +8,7 @@ import baseUrl from '../../utils/baseUrl'
 import catchErrors from '../../utils/catchErrors'
 import { setProfilePicture } from '../../redux/actions/profile'
 
-const Uploader = () => {
+const Uploader = ({ setProfilePicture }) => {
 	const INITIAL_MEDIA = ''
 	const [media, setMedia] = useState(INITIAL_MEDIA)
 	const [mediaPreview, setMediaPreview] = useState('')
@@ -23,10 +23,10 @@ const Uploader = () => {
 
 	const handleChange = (e) => {
 		const { files } = e.target
-		setMedia({ media: files[0] })
+		setMedia(files[0])
 		setMediaPreview(window.URL.createObjectURL(files[0]))
 	}
-	//refactor image upload to the server
+
 	const handleImageUpload = async () => {
 		const data = new FormData()
 		data.append('file', media)
@@ -35,7 +35,6 @@ const Uploader = () => {
 		const {
 			data: { url: mediaUrl }
 		} = await axios.post(process.env.CLOUDINARY_URL, data)
-		console.log(mediaUrl)
 		return mediaUrl
 	}
 

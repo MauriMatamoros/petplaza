@@ -6,7 +6,7 @@ const sgMail = require('@sendgrid/mail')
 const User = require('../../models/User')
 const connectDb = require('../../../utils/connectDb')
 const auth = require('../../middleware/auth')
-const cloudinary = require('../../../utils/cloudinary')
+const { deleteImage } = require('../../../utils/cloudinary')
 const baseUrl = require('../../../utils/baseUrl')
 
 connectDb()
@@ -85,16 +85,16 @@ router.put('/account/changePassword', auth, async (req, res) => {
 router.put('/account/profilePicture', auth, async (req, res) => {
 	try {
 		const { profilePicture } = req.body
-		const user = await User.findById(req.user._id)
-		if (!user.profilePicture) {
-			const user = await User.findOneAndUpdate(
-				{ _id: req.user._id },
-				{ profilePicture },
-				{ new: true }
-			)
-			return res.send(201).send(user.profilePicture)
+		let user = await User.findById(req.user._id)
+		if (user.profilePicture) {
+			await deleteImage(user.profilePicture)
 		}
-		console.log(user.profilePicture.split('/'))
+		user = await User.findOneAndUpdate(
+			{ _id: req.user._id },
+			{ profilePicture },
+			{ new: true }
+		)
+		res.status(201).send(user.profilePicture)
 	} catch (error) {
 		res
 			.status(500)

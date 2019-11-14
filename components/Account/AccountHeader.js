@@ -13,19 +13,18 @@ const AccountHeader = ({
 }) => {
 	return (
 		<Segment secondary inverted>
-			{profilePicture ? (
-				<Image src={profilePicture} size='medium' circular />
-			) : (
-				<Label
-					size='large'
-					ribbon
-					icon='privacy'
-					style={{ textTransform: 'capitalize' }}
-					content={role}
-				/>
+			<Label
+				size='large'
+				ribbon
+				icon='privacy'
+				style={{ textTransform: 'capitalize' }}
+				content={role}
+			/>
+			{profilePicture && (
+				<Image src={profilePicture} size='small' circular centered />
 			)}
 			<Header inverted textAlign='center' as='h1' icon>
-				<Icon name='user' />
+				{!profilePicture && <Icon name='user' />}
 				{name}
 				<Header.Subheader>Email: {email}</Header.Subheader>
 				<Header.Subheader>ID: {id}</Header.Subheader>

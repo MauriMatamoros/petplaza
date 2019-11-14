@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { Button } from 'semantic-ui-react'
+import { Button, Segment, Header, Icon } from 'semantic-ui-react'
 import { parseCookies } from 'nookies'
 import axios from 'axios'
 
@@ -8,19 +8,29 @@ import PetList from '../../components/Pet/PetList'
 
 const Pets = ({ pets }) => {
 	const router = useRouter()
-	return (
-		console.log(pets) || (
-			<>
-				<PetList pets={pets} />
-				<Button
-					circular
-					icon='add'
-					floated='right'
-					size='huge'
-					onClick={() => router.push('/addPet')}
-				/>
-			</>
-		)
+	return pets.length > 0 ? (
+		<>
+			<PetList pets={pets} />
+			<Button
+				circular
+				icon='add'
+				floated='right'
+				size='huge'
+				onClick={() => router.push('/addPet')}
+			/>
+		</>
+	) : (
+		<>
+			<Segment placeholder>
+				<Header icon>
+					<Icon name='paw' />
+					No pets are listed for this user.
+				</Header>
+				<Button primary onClick={() => router.push('/addPet')}>
+					Add Pet
+				</Button>
+			</Segment>
+		</>
 	)
 }
 

@@ -49,7 +49,7 @@ const CreateProduct = () => {
 			}))
 		}
 	}
-	//refactor image upload to the server
+
 	const handleImageUpload = async () => {
 		const data = new FormData()
 		data.append('file', product.media)
