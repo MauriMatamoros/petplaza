@@ -134,7 +134,6 @@ const Book = ({ doctors }) => {
 
 Book.getInitialProps = async (ctx) => {
 	const { token } = parseCookies(ctx)
-	// Check not necessary due to configurations in _app.js
 	const payload = { headers: { Authorization: token } }
 	const url = `${baseUrl}/api/users/doctors`
 	const { data } = await axios.get(url, payload)

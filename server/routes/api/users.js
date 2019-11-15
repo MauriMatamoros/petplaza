@@ -39,9 +39,11 @@ router.get('/users', auth, async (req, res) => {
 	}
 })
 
-router.get('/users/doctors', auth, async (req, res) => {
+router.get('/users/doctors', async (req, res) => {
 	try {
-		const doctors = await User.find({ role: 'doctor' })
+		const doctors = await User.find({ role: 'doctor' }).select(
+			'-resetToken -birthday'
+		)
 		if (!doctors) {
 			return res.status(200).json([])
 		}
