@@ -40,6 +40,12 @@ const Header = ({ user, logout }) => {
 					Cart
 				</Menu.Item>
 			</Link>
+			<Link href='/doctors'>
+				<Menu.Item header active={isActive('/doctors')}>
+					<Icon name='doctor' size='large' />
+					Doctors
+				</Menu.Item>
+			</Link>
 			{isRootOrAdmin && (
 				<>
 					<Link href='/create'>
