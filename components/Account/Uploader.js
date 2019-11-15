@@ -53,6 +53,7 @@ const Uploader = ({ setProfilePicture }) => {
 			const { data } = await axios.put(url, payload, headers)
 			setProfilePicture(data)
 			setMedia(INITIAL_MEDIA)
+			setMediaPreview(INITIAL_MEDIA)
 			setSuccess(true)
 		} catch (error) {
 			catchErrors(error, setError)

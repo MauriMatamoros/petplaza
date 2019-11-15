@@ -13,8 +13,9 @@ import Uploader from '../components/Account/Uploader'
 import Spinner from '../components/Spinner/Spinner'
 import baseUrl from '../utils/baseUrl'
 import { setProfile } from '../redux/actions/profile'
+import { setInitialOrders } from '../redux/actions/order'
 
-const Account = ({ user, orders, setProfile, loading }) => {
+const Account = ({ user, setProfile, loading }) => {
 	const isRoot = user.role === 'root'
 	const isDoctor = user.role === 'doctor'
 	const isRootOrDoctor = isRoot || isDoctor
@@ -29,7 +30,7 @@ const Account = ({ user, orders, setProfile, loading }) => {
 			<AccountInformation />
 			<ChangePassword />
 			{isRootOrDoctor && <DoctorInformation />}
-			<AccountOrders orders={orders} />
+			<AccountOrders />
 			{isRoot && <AccountPermissions currentUserId={user._id} />}
 		</>
 	) : (
@@ -39,16 +40,20 @@ const Account = ({ user, orders, setProfile, loading }) => {
 
 Account.getInitialProps = async (ctx) => {
 	const { token } = parseCookies(ctx)
-	// Check not necessary due to configurations in _app.js
 	if (!token) {
-		return { orders: [] }
+		return { orders: [], pageNumber: 0 }
 	}
-	const payload = { headers: { Authorization: token } }
+	const {
+		order: { pageSize }
+	} = ctx.reduxStore.getState()
+	const payload = {
+		headers: { Authorization: token },
+		params: { page: 1, size: pageSize }
+	}
 	const url = `${baseUrl}/api/orders`
 	const { data } = await axios.get(url, payload)
-	return {
-		orders: data
-	}
+	ctx.reduxStore.dispatch(setInitialOrders(data))
+	return {}
 }
 
 const mapStateToProps = ({ profile: { loading } }) => ({
@@ -57,5 +62,5 @@ const mapStateToProps = ({ profile: { loading } }) => ({
 
 export default connect(
 	mapStateToProps,
-	{ setProfile }
+	{ setProfile, setInitialOrders }
 )(Account)
