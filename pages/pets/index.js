@@ -11,13 +11,15 @@ const Pets = ({ pets }) => {
 	return pets.length > 0 ? (
 		<>
 			<PetList pets={pets} />
-			<Button
-				circular
-				icon='add'
-				floated='right'
-				size='huge'
-				onClick={() => router.push('/addPet')}
-			/>
+			<Segment basic>
+				<Button
+					circular
+					icon='add'
+					floated='right'
+					size='huge'
+					onClick={() => router.push('/addPet')}
+				/>
+			</Segment>
 		</>
 	) : (
 		<>

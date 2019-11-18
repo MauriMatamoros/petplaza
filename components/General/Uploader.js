@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Form, Input, Button, Image, Message } from 'semantic-ui-react'
 import cookie from 'js-cookie'
-import { connect } from 'react-redux'
 
 import baseUrl from '../../utils/baseUrl'
 import catchErrors from '../../utils/catchErrors'
-import { setProfilePicture } from '../../redux/actions/profile'
 
-const Uploader = ({ setProfilePicture }) => {
+const Uploader = ({ setProfilePicture, routeUrl }) => {
 	const INITIAL_MEDIA = ''
 	const [media, setMedia] = useState(INITIAL_MEDIA)
 	const [mediaPreview, setMediaPreview] = useState('')
@@ -45,7 +43,7 @@ const Uploader = ({ setProfilePicture }) => {
 			setError('')
 			const mediaUrl = await handleImageUpload()
 			const token = cookie.get('token')
-			const url = `${baseUrl}/api/account/profilePicture`
+			const url = `${baseUrl}/${routeUrl}`
 			const headers = {
 				headers: { Authorization: token }
 			}
@@ -102,7 +100,4 @@ const Uploader = ({ setProfilePicture }) => {
 	)
 }
 
-export default connect(
-	null,
-	{ setProfilePicture }
-)(Uploader)
+export default Uploader

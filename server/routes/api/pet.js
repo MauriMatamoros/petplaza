@@ -6,6 +6,7 @@ const CheckUp = require('../../models/CheckUp')
 const auth = require('../../middleware/auth')
 
 const connectDb = require('../../../utils/connectDb')
+const { deleteImage } = require('../../../utils/cloudinary')
 
 connectDb()
 
@@ -64,6 +65,26 @@ router.put('/pet/:_id', auth, async (req, res) => {
 		res.status(201).json(pet)
 	} catch (error) {
 		res.status(403).send('Invalid token.')
+	}
+})
+
+router.put('/pet/profilePicture/:_id', auth, async (req, res) => {
+	try {
+		const { profilePicture } = req.body
+		let pet = await Pet.find({ owner: req.user._id, _id: req.params._id })
+		if (pet.profilePicture) {
+			await deleteImage(pet.profilePicture)
+		}
+		pet = await Pet.findOneAndUpdate(
+			{ _id: req.params._id, owner: req.user._id },
+			{ profilePicture },
+			{ new: true }
+		)
+		res.status(201).send(pet.profilePicture)
+	} catch (error) {
+		res
+			.status(500)
+			.send('Server error. Please try setting your profile picture later.')
 	}
 })
 

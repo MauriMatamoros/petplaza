@@ -2,7 +2,8 @@ import {
 	SET_PET,
 	START_UPDATE_PET,
 	UPDATE_PET,
-	PET_ERROR
+	PET_ERROR,
+	SET_PET_PROFILE_PICTURE
 } from '../actions/types'
 
 const initialState = {
@@ -12,6 +13,7 @@ const initialState = {
 	id: null,
 	birthday: null,
 	color: null,
+	profilePicture: null,
 	loading: true,
 	loadingForm: false,
 	error: null,
@@ -43,6 +45,12 @@ export default (state = initialState, action) => {
 				loadingForm: false,
 				error: null,
 				success: true
+			}
+		}
+		case SET_PET_PROFILE_PICTURE: {
+			return {
+				...state,
+				profilePicture: payload
 			}
 		}
 		case PET_ERROR: {

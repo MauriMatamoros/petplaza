@@ -9,13 +9,13 @@ import AccountPermissions from '../components/Account/AccountPermissions'
 import AccountInformation from '../components/Account/AccountInformation'
 import ChangePassword from '../components/Account/ChangePassword'
 import DoctorInformation from '../components/Account/DoctorInformation'
-import Uploader from '../components/Account/Uploader'
+import Uploader from '../components/General/Uploader'
 import Spinner from '../components/Spinner/Spinner'
 import baseUrl from '../utils/baseUrl'
-import { setProfile } from '../redux/actions/profile'
+import { setProfile, setProfilePicture } from '../redux/actions/profile'
 import { setInitialOrders } from '../redux/actions/order'
 
-const Account = ({ user, setProfile, loading }) => {
+const Account = ({ user, setProfile, loading, setProfilePicture }) => {
 	const isRoot = user.role === 'root'
 	const isDoctor = user.role === 'doctor'
 	const isRootOrDoctor = isRoot || isDoctor
@@ -23,10 +23,14 @@ const Account = ({ user, setProfile, loading }) => {
 	useEffect(() => {
 		setProfile({ ...user })
 	}, [setProfile])
+
 	return !loading ? (
 		<>
 			<AccountHeader />
-			<Uploader />
+			<Uploader
+				routeUrl='api/account/profilePicture'
+				setProfilePicture={setProfilePicture}
+			/>
 			<AccountInformation />
 			<ChangePassword />
 			{isRootOrDoctor && <DoctorInformation />}
@@ -60,7 +64,8 @@ const mapStateToProps = ({ profile: { loading } }) => ({
 	loading
 })
 
-export default connect(
-	mapStateToProps,
-	{ setProfile, setInitialOrders }
-)(Account)
+export default connect(mapStateToProps, {
+	setProfile,
+	setInitialOrders,
+	setProfilePicture
+})(Account)

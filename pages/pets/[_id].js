@@ -6,10 +6,15 @@ import DatePicker from 'react-datepicker'
 import { connect } from 'react-redux'
 
 import baseUrl from '../../utils/baseUrl'
-import catchErrors from '../../utils/catchErrors'
-import { setPet } from '../../redux/actions/pet'
+import Uploader from '../../components/General/Uploader'
+import {
+	setPet,
+	setPetProfilePicture,
+	updatePet
+} from '../../redux/actions/pet'
 
 const Pet = ({
+	_id,
 	name,
 	gender,
 	birthday,
@@ -17,17 +22,16 @@ const Pet = ({
 	breed,
 	loading,
 	success,
-	error
+	error,
+	setPetProfilePicture,
+	updatePet
 }) => {
 	const INITIAL_PET = {
 		name,
 		gender,
 		birthday,
 		color,
-		breed,
-		loading,
-		success,
-		error
+		breed
 	}
 	const [pet, setPet] = useState(INITIAL_PET)
 	const [disabled, setDisabled] = useState(true)
@@ -50,31 +54,10 @@ const Pet = ({
 	}
 
 	const handleSubmit = async (e) => {
-		try {
-			e.preventDefault()
-			setLoading(true)
-			setError('')
-			const url = `${baseUrl}/api/pet`
-			const { name, color, breed, gender, birthday } = pet
-			const token = cookie.get('token')
-			const headers = {
-				headers: { Authorization: token }
-			}
-			const payload = {
-				name,
-				color,
-				breed,
-				gender,
-				birthday
-			}
-			const { data } = await axios.post(url, payload, headers)
-			setPet(INITIAL_PET)
-			setSuccess(true)
-		} catch (error) {
-			catchErrors(error, setError)
-		} finally {
-			setLoading(false)
-		}
+		e.preventDefault()
+		const token = cookie.get('token')
+		const { name, gender, birthday, color, breed } = pet
+		updatePet(_id, { name, gender, birthday, color, breed }, token)
 	}
 
 	return (
@@ -88,6 +71,7 @@ const Pet = ({
 				error={Boolean(error)}
 				onSubmit={handleSubmit}
 				success={success}
+				style={{ marginBottom: '2em' }}
 			>
 				<Message
 					success
@@ -167,6 +151,11 @@ const Pet = ({
 					disabled={disabled || loading}
 				/>
 			</Form>
+			<br />
+			<Uploader
+				routeUrl={`api/pet/profilePicture/${_id}`}
+				setProfilePicture={setPetProfilePicture}
+			/>
 		</>
 	)
 }
@@ -175,23 +164,26 @@ Pet.getInitialProps = async ({ reduxStore: { dispatch }, query: { _id } }) => {
 	const url = `${baseUrl}/api/pet/${_id}`
 	const { data } = await axios.get(url)
 	dispatch(setPet(data))
-	return {}
+	return {
+		_id
+	}
 }
 
 const mapStateToProps = ({
-	pet: { name, color, breed, gender, birthday, loading, success, error }
+	pet: { name, color, breed, gender, birthday, loadingForm, success, error }
 }) => ({
 	name,
 	color,
 	breed,
 	gender,
 	birthday,
-	loading,
+	loading: loadingForm,
 	success,
 	error
 })
 
-export default connect(
-	mapStateToProps,
-	{ setPet }
-)(Pet)
+export default connect(mapStateToProps, {
+	setPet,
+	setPetProfilePicture,
+	updatePet
+})(Pet)

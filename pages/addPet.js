@@ -77,6 +77,7 @@ const CreatePet = () => {
 				error={Boolean(error)}
 				onSubmit={handleSubmit}
 				success={success}
+				style={{ marginBottom: '2em' }}
 			>
 				<Message
 					success
