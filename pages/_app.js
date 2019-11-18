@@ -8,6 +8,10 @@ import Layout from '../components/_App/Layout'
 import withReduxStore from '../lib/with-redux-store'
 import { redirectUser } from '../utils/auth'
 import baseUrl from '../utils/baseUrl'
+
+const DOCTOR_ROUTES = ['/patients']
+const ADMIN_ROUTES = ['/create', '/orders']
+
 class MyApp extends App {
 	static async getInitialProps({ Component, ctx }) {
 		const { token } = parseCookies(ctx)
@@ -36,9 +40,11 @@ class MyApp extends App {
 				const user = data
 				const isRoot = user.role === 'root'
 				const isAdmin = user.role === 'admin'
-				const isNotPermitted =
-					!(isRoot || isAdmin) && ctx.pathname === '/create'
-				if (isNotPermitted) {
+				const isDoctor = user.role === 'doctor'
+				if (!(isDoctor || isRoot) && DOCTOR_ROUTES.includes(ctx.pathname)) {
+					redirectUser(ctx, '/')
+				}
+				if (!(isAdmin || isRoot) && ADMIN_ROUTES.includes(ctx.pathname)) {
 					redirectUser(ctx, '/')
 				}
 				pageProps.user = user

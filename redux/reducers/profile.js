@@ -15,6 +15,7 @@ const initialState = {
 	id: null,
 	birthday: null,
 	profilePicture: null,
+	cellphone: null,
 	university: null,
 	specialty: null,
 	facebook: null,

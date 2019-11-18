@@ -29,6 +29,10 @@ const UserSchema = new mongoose.Schema(
 			unique: true,
 			required: true
 		},
+		cellphone: {
+			type: String,
+			required: true
+		},
 		birthday: {
 			type: Date,
 			required: true

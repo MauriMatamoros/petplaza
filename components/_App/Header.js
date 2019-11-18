@@ -12,7 +12,9 @@ const Header = ({ user, logout }) => {
 	const isActive = (route) => route === router.pathname
 	const isRoot = user && user.role === 'root'
 	const isAdmin = user && user.role === 'admin'
+	const isDoctor = user && user.role === 'doctor'
 	const isRootOrAdmin = isRoot || isAdmin
+	const isRootOrDoctor = isRoot || isDoctor
 
 	Router.onRouteChangeStart = () => NProgress.start()
 	Router.onRouteChangeComplete = () => NProgress.done()
@@ -60,6 +62,10 @@ const Header = ({ user, logout }) => {
 							Orders
 						</Menu.Item>
 					</Link>
+				</>
+			)}
+			{isRootOrDoctor && (
+				<>
 					<Link href='/search'>
 						<Menu.Item header active={isActive('/orders')}>
 							<Icon name='user' size='large' />
@@ -113,7 +119,4 @@ const Header = ({ user, logout }) => {
 	)
 }
 
-export default connect(
-	null,
-	{ logout }
-)(Header)
+export default connect(null, { logout })(Header)

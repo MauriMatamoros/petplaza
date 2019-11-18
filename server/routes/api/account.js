@@ -28,10 +28,10 @@ router.get('/account', auth, async (req, res) => {
 
 router.put('/account', auth, async (req, res) => {
 	try {
-		const { name, email, id, birthday } = req.body
+		const { name, email, id, birthday, cellphone } = req.body
 		const user = await User.findOneAndUpdate(
 			{ _id: req.user._id },
-			{ name, email, id, birthday },
+			{ name, email, id, birthday, cellphone },
 			{ new: true }
 		)
 		res.status(201).json(user)

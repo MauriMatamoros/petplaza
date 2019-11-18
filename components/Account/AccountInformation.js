@@ -11,6 +11,7 @@ const AccountInformation = ({
 	email,
 	id,
 	birthday,
+	cellphone,
 	loading,
 	success,
 	error,
@@ -20,7 +21,8 @@ const AccountInformation = ({
 		name,
 		email,
 		id,
-		birthday
+		birthday,
+		cellphone
 	}
 	const [user, setUser] = useState(INITIAL_USER)
 	const [disabled, setDisabled] = useState(true)
@@ -94,6 +96,17 @@ const AccountInformation = ({
 					value={user.id}
 					type='text'
 				/>
+				<Form.Input
+					fluid
+					icon='call'
+					iconPosition='left'
+					label='Cellphone'
+					placeholder='99999999'
+					name='cellphone'
+					onChange={handleChange}
+					value={user.cellphone}
+					type='text'
+				/>
 				<div className='field'>
 					<label>Birthday</label>
 					<DatePicker
@@ -118,18 +131,16 @@ const AccountInformation = ({
 }
 
 const mapStateToProps = ({
-	profile: { name, email, id, birthday, loadingForm, success, error }
+	profile: { name, email, id, birthday, cellphone, loadingForm, success, error }
 }) => ({
 	name,
 	email,
 	id,
 	birthday,
 	success,
+	cellphone,
 	error,
 	loading: loadingForm
 })
 
-export default connect(
-	mapStateToProps,
-	{ updateProfile }
-)(AccountInformation)
+export default connect(mapStateToProps, { updateProfile })(AccountInformation)

@@ -14,6 +14,7 @@ const Signup = () => {
 		email: '',
 		password: '',
 		id: '',
+		cellphone: '',
 		birthday: new Date()
 	}
 	const [user, setUser] = useState(INITIAL_USER)
@@ -107,6 +108,17 @@ const Signup = () => {
 						name='id'
 						onChange={handleChange}
 						value={user.id}
+						type='text'
+					/>
+					<Form.Input
+						fluid
+						icon='call'
+						iconPosition='left'
+						label='Cellphone'
+						placeholder='99999999'
+						name='cellphone'
+						onChange={handleChange}
+						value={user.cellphone}
 						type='text'
 					/>
 					<div className='field'>

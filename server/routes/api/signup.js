@@ -14,7 +14,7 @@ const router = express.Router()
 
 router.post('/signup', async (req, res) => {
 	try {
-		const { name, email, password, id, birthday } = req.body
+		const { name, email, password, id, birthday, cellphone } = req.body
 		if (!isLength(name, { min: 3, max: 10 })) {
 			return res.status(422).send('Name must be 3-10 characters long.')
 		} else if (!isLength(password, { min: 6 })) {
@@ -31,7 +31,14 @@ router.post('/signup', async (req, res) => {
 			return res.status(422).send(`User already exists with email ${email}`)
 		}
 		const hash = await bcrypt.hash(password, 10)
-		user = await new User({ name, email, password: hash, id, birthday }).save()
+		user = await new User({
+			name,
+			email,
+			password: hash,
+			id,
+			birthday,
+			cellphone
+		}).save()
 		await new Cart({ user: user._id }).save()
 		const token = await jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
 			expiresIn: '1d'

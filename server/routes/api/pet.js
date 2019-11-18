@@ -44,6 +44,11 @@ router.get('/pets', auth, async (req, res) => {
 	}
 })
 
+router.get('/patients', auth, async (req, res) => {
+	try {
+	} catch (error) {}
+})
+
 router.get('/pet/:_id', async (req, res) => {
 	try {
 		const pet = await Pet.findById(req.params._id)
