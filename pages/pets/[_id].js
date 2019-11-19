@@ -4,10 +4,11 @@ import { connect } from 'react-redux'
 import baseUrl from '../../utils/baseUrl'
 import { setPet } from '../../redux/actions/pet'
 import PetForm from '../../components/Pet/PetForm'
+import PetInformation from '../../components/Pet/PetInformation'
 
 const Pet = ({ _id, owner, user }) => {
 	const isOwner = owner === user._id
-	return <>{isOwner ? <PetForm _id={_id} /> : <div>SOme doctor</div>}</>
+	return <>{isOwner ? <PetForm _id={_id} /> : <PetInformation />}</>
 }
 
 Pet.getInitialProps = async ({ reduxStore: { dispatch }, query: { _id } }) => {
