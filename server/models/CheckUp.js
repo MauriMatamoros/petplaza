@@ -17,7 +17,12 @@ const CheckUpSchema = new mongoose.Schema(
 		},
 		medicines: {
 			type: String
-		}
+		},
+		tests: [
+			{
+				type: String
+			}
+		]
 	},
 	{
 		timestamps: true

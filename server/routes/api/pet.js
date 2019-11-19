@@ -1,6 +1,7 @@
 const express = require('express')
 
 const Pet = require('../../models/Pet')
+const User = require('../../models/User')
 const Record = require('../../models/Record')
 const CheckUp = require('../../models/CheckUp')
 const auth = require('../../middleware/auth')
@@ -27,6 +28,7 @@ router.post('/pet', auth, async (req, res) => {
 			birthday,
 			owner
 		}).save()
+		await new Record({ pet: pet._id }).save()
 		res.status(201).json({ pet })
 	} catch (error) {
 		console.error(error)
@@ -44,9 +46,26 @@ router.get('/pets', auth, async (req, res) => {
 	}
 })
 
-router.get('/patients', auth, async (req, res) => {
+router.get('/patients/:id', auth, async (req, res) => {
 	try {
-	} catch (error) {}
+		const isRoot = req.user.role === 'root'
+		const isDoctor = req.user.role === 'doctor'
+		const isNeitherRootOrDoctor = !isRoot && !isDoctor
+		if (isNeitherRootOrDoctor) {
+			return res.status(401).send('Not enough privilages.')
+		}
+		const user = await User.findOne({ id: req.params.id }).select(
+			'+name +cellphone +email +profilePicture'
+		)
+		if (!user) {
+			return res.status(404).send('User not found.')
+		}
+		const pets = await Pet.find({ owner: user._id })
+		res.status(200).json({ user, pets })
+	} catch (error) {
+		console.error(error)
+		res.status(500).send('Server error.')
+	}
 })
 
 router.get('/pet/:_id', async (req, res) => {
