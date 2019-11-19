@@ -20,7 +20,7 @@ const RecordSchema = new mongoose.Schema(
 				}
 			}
 		],
-		alergies: [
+		allergies: [
 			{
 				name: {
 					type: String,

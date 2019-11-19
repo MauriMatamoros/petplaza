@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose')
 
 const Pet = require('../../models/Pet')
 const User = require('../../models/User')
@@ -71,7 +72,48 @@ router.get('/patients/:id', auth, async (req, res) => {
 router.get('/pet/:_id', async (req, res) => {
 	try {
 		const pet = await Pet.findById(req.params._id)
-		res.status(201).json(pet)
+		const record = await Record.findOne({ pet: pet._id })
+		res.status(201).json({ pet, record })
+	} catch (error) {
+		console.error(error)
+		res.status(500).send('Server error.')
+	}
+})
+
+router.put('/add/vaccine/:id', auth, async (req, res) => {
+	try {
+		const isRoot = req.user.role === 'root'
+		const isDoctor = req.user.role === 'doctor'
+		const isDoctorOrRoot = isRoot || isDoctor
+		const { name, date } = req.body
+		if (!isDoctorOrRoot) {
+			return res.send(401).send('Not enough permissions.')
+		}
+		const record = await Record.findOneAndUpdate(
+			{ pet: req.params.id },
+			{ $push: { vaccines: { name, date } } },
+			{ new: true }
+		)
+		res.status(201).json(record.vaccines[record.vaccines.length - 1])
+	} catch (error) {
+		console.error(error)
+		res.status(500).send('Server error.')
+	}
+})
+
+router.delete('/pet/:petId/vaccine/:vaccineId', auth, async (req, res) => {
+	try {
+		const isRoot = req.user.role === 'root'
+		const isDoctor = req.user.role === 'doctor'
+		const isDoctorOrRoot = isRoot || isDoctor
+		if (!isDoctorOrRoot) {
+			return res.send(401).send('Not enough permissions.')
+		}
+		await Record.findOneAndUpdate(
+			{ pet: req.params.petId },
+			{ $pull: { vaccines: { _id: req.params.vaccineId } } }
+		)
+		res.status(201).json(req.params.vaccineId)
 	} catch (error) {
 		console.error(error)
 		res.status(500).send('Server error.')
