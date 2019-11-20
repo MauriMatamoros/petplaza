@@ -7,14 +7,16 @@ import cookie from 'js-cookie'
 
 import baseUrl from '../../utils/baseUrl'
 import catchErrors from '../../utils/catchErrors'
-import { addVaccine } from '../../redux/actions/pet'
+import { addVaccine, addAllergy, addDisease } from '../../redux/actions/pet'
 import Vaccines from '../../components/Pet/Vaccines'
+import Allergies from '../../components/Pet/Allergies'
 
-const Record = ({ _id, role, addVaccine }) => {
+const Record = ({ _id, role, addVaccine, addAllergy }) => {
 	const INITIAL_VACCINE = {
 		name: '',
 		date: new Date()
 	}
+	const token = cookie.get('token')
 	const isDoctor = role === 'doctor'
 	const isRoot = role === 'root'
 	const isDoctorOrRoot = isDoctor || isRoot
@@ -41,9 +43,41 @@ const Record = ({ _id, role, addVaccine }) => {
 		isVaccine ? setDisabledVaccine(false) : setDisabledVaccine(true)
 	}, [vaccine])
 
+	useEffect(() => {
+		const isAllergy = Object.values(allergy).every((element) =>
+			Boolean(element)
+		)
+		isAllergy ? setDisabledAllergy(false) : setDisabledAllergy(true)
+	}, [vaccine])
+
 	const handleVaccineChange = (e) => {
 		const { value } = e.target
 		setVaccine((prevState) => ({ ...prevState, name: value }))
+	}
+
+	const handleAllergyChange = (e) => {
+		const { value } = e.target
+		setAllergy(value)
+	}
+
+	const handleAllergySubmit = async (e) => {
+		e.preventDefault()
+		try {
+			setErrorAllergy('')
+			setLoadingAllergy(true)
+			const payload = { allergy }
+			console.log('the', allergy)
+			const url = `${baseUrl}/api/add/allergy/${_id}`
+			const headers = { headers: { Authorization: token } }
+			const { data } = await axios.put(url, payload, headers)
+			console.log(data)
+			addAllergy(data)
+			setSuccessAllergy(true)
+		} catch (error) {
+			catchErrors(error, setErrorAllergy)
+		} finally {
+			setLoadingAllergy(false)
+		}
 	}
 
 	const handleVaccineDateChange = (date) => {
@@ -55,7 +89,6 @@ const Record = ({ _id, role, addVaccine }) => {
 		try {
 			setErrorVaccine('')
 			setLoadingVaccine(true)
-			const token = cookie.get('token')
 			const { name, date } = vaccine
 			const payload = { name, date }
 			const url = `${baseUrl}/api/add/vaccine/${_id}`
@@ -112,10 +145,41 @@ const Record = ({ _id, role, addVaccine }) => {
 							disabled={disabledVaccine || loadingVaccine}
 						/>
 					</Form>
+					<br />
+				</>
+			)}
+			<Allergies role={role} petId={_id} />
+			{isDoctorOrRoot && (
+				<>
+					<Form
+						onSubmit={handleAllergySubmit}
+						success={successAllergy}
+						error={Boolean(errorAllergy)}
+						loading={loadingAllergy}
+					>
+						<Form.Field
+							control={Input}
+							name='allergy'
+							label='Allergy'
+							placeholder='Allergy'
+							type='text'
+							onChange={handleAllergyChange}
+							value={allergy}
+						/>
+						<Form.Field
+							control={Button}
+							color='blue'
+							icon='pencil alternate'
+							content='Submit'
+							type='submit'
+							disabled={disabledAllergy || loadingAllergy}
+						/>
+					</Form>
+					<br />
 				</>
 			)}
 		</>
 	)
 }
 
-export default connect(null, { addVaccine })(Record)
+export default connect(null, { addVaccine, addAllergy, addDisease })(Record)

@@ -7,7 +7,13 @@ import {
 	SET_RECORD,
 	ADD_VACCINE,
 	REMOVE_VACCINE,
-	START_REMOVE_VACCINE
+	START_REMOVE_VACCINE,
+	ADD_ALLERGY,
+	ADD_DISEASE,
+	REMOVE_ALLERGY,
+	REMOVE_DISEASE,
+	START_REMOVE_ALLERGY,
+	START_REMOVE_DISEASE
 } from '../actions/types'
 
 const initialState = {
@@ -21,6 +27,8 @@ const initialState = {
 	vaccines: [],
 	allergies: [],
 	diseases: [],
+	loadingAllergies: false,
+	loadingDiseases: false,
 	loadingVaccines: false,
 	loading: true,
 	loadingForm: false,
@@ -45,11 +53,35 @@ export default (state = initialState, action) => {
 				loadingVaccines: true,
 				error: null
 			}
+		case START_REMOVE_ALLERGY:
+			return {
+				...state,
+				loadingAllergies: true,
+				error: null
+			}
+		case START_REMOVE_DISEASE:
+			return {
+				...state,
+				loadingDiseases: true,
+				error: null
+			}
 		case REMOVE_VACCINE:
 			return {
 				...state,
 				vaccines: state.vaccines.filter(({ _id }) => _id !== payload),
 				loadingVaccines: false
+			}
+		case REMOVE_ALLERGY:
+			return {
+				...state,
+				allergies: state.allergies.filter(({ _id }) => _id !== payload),
+				loadingAllergies: false
+			}
+		case REMOVE_DISEASE:
+			return {
+				...state,
+				diseases: state.diseases.filter(({ _id }) => _id !== payload),
+				loadingDiseases: false
 			}
 		case SET_RECORD:
 			return {
@@ -63,6 +95,16 @@ export default (state = initialState, action) => {
 			return {
 				...state,
 				vaccines: [...state.vaccines, payload]
+			}
+		case ADD_ALLERGY:
+			return {
+				...state,
+				allergies: [...state.allergies, payload]
+			}
+		case ADD_DISEASE:
+			return {
+				...state,
+				diseases: [...state.diseases, payload]
 			}
 		case START_UPDATE_PET:
 			return {
