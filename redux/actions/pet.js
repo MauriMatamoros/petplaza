@@ -83,6 +83,26 @@ export const removeAllergy = (petId, allergyId, token) => async (dispatch) => {
 export const addDisease = (disease) => (dispatch) =>
 	dispatch({ type: ADD_DISEASE, payload: disease })
 
+export const removeDisease = (petId, diseaseId, token) => async (dispatch) => {
+	try {
+		dispatch({ type: START_REMOVE_DISEASE })
+		const url = `${baseUrl}/api/pet/${petId}/disease/${diseaseId}`
+		const payload = {
+			headers: { Authorization: token }
+		}
+		const { data } = await axios.delete(url, payload)
+		dispatch({
+			type: REMOVE_DISEASE,
+			payload: data
+		})
+	} catch (error) {
+		dispatch({
+			type: PET_ERROR,
+			payload: error.response.data
+		})
+	}
+}
+
 export const updatePet = (_id, pet, token) => async (dispatch) => {
 	try {
 		dispatch({

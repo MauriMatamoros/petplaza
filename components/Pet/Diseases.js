@@ -2,18 +2,18 @@ import { connect } from 'react-redux'
 import { Segment, Header, Button } from 'semantic-ui-react'
 import cookie from 'js-cookie'
 
-import { removeAllergy } from '../../redux/actions/pet'
+import { removeDisease } from '../../redux/actions/pet'
 
-const Allergies = ({
+const Diseases = ({
 	role,
 	petId,
-	allergies,
-	loadingAllergies,
-	removeAllergy
+	diseases,
+	loadingDiseases,
+	removeDisease
 }) => {
 	const token = cookie.get('token')
-	const mapAllergies = (allergies) =>
-		allergies.map(({ _id, name }) => (
+	const mapDiseases = (diseases) =>
+		diseases.map(({ _id, name }) => (
 			<Segment.Group key={_id} horizontal>
 				<Segment textAlign='center' basic>
 					{name}
@@ -24,7 +24,7 @@ const Allergies = ({
 							<Button
 								negative
 								icon='delete'
-								onClick={() => removeAllergy(petId, _id, token)}
+								onClick={() => removeDisease(petId, _id, token)}
 							></Button>
 						</Segment>
 					))}
@@ -32,20 +32,20 @@ const Allergies = ({
 		))
 	return (
 		<>
-			{allergies && (
-				<Segment basic loading={loadingAllergies}>
+			{diseases && (
+				<Segment basic loading={loadingDiseases}>
 					{' '}
-					<Header>Allergies</Header>
-					{mapAllergies(allergies)}
+					<Header>Diseases</Header>
+					{mapDiseases(diseases)}
 				</Segment>
 			)}
 		</>
 	)
 }
 
-const mapStateToProps = ({ pet: { allergies, loadingAllergies } }) => ({
-	allergies,
-	loadingAllergies
+const mapStateToProps = ({ pet: { diseases, loadingDiseases } }) => ({
+	diseases,
+	loadingDiseases
 })
 
-export default connect(mapStateToProps, { removeAllergy })(Allergies)
+export default connect(mapStateToProps, { removeDisease })(Diseases)

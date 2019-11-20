@@ -122,6 +122,46 @@ router.put('/add/allergy/:id', auth, async (req, res) => {
 	}
 })
 
+router.put('/add/disease/:id', auth, async (req, res) => {
+	try {
+		const isRoot = req.user.role === 'root'
+		const isDoctor = req.user.role === 'doctor'
+		const isDoctorOrRoot = isRoot || isDoctor
+		const { disease } = req.body
+		if (!isDoctorOrRoot) {
+			return res.send(401).send('Not enough permissions.')
+		}
+		const record = await Record.findOneAndUpdate(
+			{ pet: req.params.id },
+			{ $push: { diseases: { name: disease } } },
+			{ new: true }
+		)
+		res.status(201).json(record.diseases[record.diseases.length - 1])
+	} catch (error) {
+		console.error(error)
+		res.status(500).send('Server error.')
+	}
+})
+
+router.delete('/pet/:petId/disease/:diseaseId', auth, async (req, res) => {
+	try {
+		const isRoot = req.user.role === 'root'
+		const isDoctor = req.user.role === 'doctor'
+		const isDoctorOrRoot = isRoot || isDoctor
+		if (!isDoctorOrRoot) {
+			return res.send(401).send('Not enough permissions.')
+		}
+		await Record.findOneAndUpdate(
+			{ pet: req.params.petId },
+			{ $pull: { diseases: { _id: req.params.diseaseId } } }
+		)
+		res.status(201).json(req.params.diseaseId)
+	} catch (error) {
+		console.error(error)
+		res.status(500).send('Server error.')
+	}
+})
+
 router.delete('/pet/:petId/allergy/:allergyId', auth, async (req, res) => {
 	try {
 		const isRoot = req.user.role === 'root'

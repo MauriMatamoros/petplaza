@@ -10,8 +10,9 @@ import catchErrors from '../../utils/catchErrors'
 import { addVaccine, addAllergy, addDisease } from '../../redux/actions/pet'
 import Vaccines from '../../components/Pet/Vaccines'
 import Allergies from '../../components/Pet/Allergies'
+import Diseases from '../../components/Pet/Diseases'
 
-const Record = ({ _id, role, addVaccine, addAllergy }) => {
+const Record = ({ _id, role, addVaccine, addAllergy, addDisease }) => {
 	const INITIAL_VACCINE = {
 		name: '',
 		date: new Date()
@@ -48,7 +49,14 @@ const Record = ({ _id, role, addVaccine, addAllergy }) => {
 			Boolean(element)
 		)
 		isAllergy ? setDisabledAllergy(false) : setDisabledAllergy(true)
-	}, [vaccine])
+	}, [allergy])
+
+	useEffect(() => {
+		const isDisease = Object.values(disease).every((element) =>
+			Boolean(element)
+		)
+		isDisease ? setDisabledDisease(false) : setDisabledDisease(true)
+	}, [disease])
 
 	const handleVaccineChange = (e) => {
 		const { value } = e.target
@@ -60,23 +68,44 @@ const Record = ({ _id, role, addVaccine, addAllergy }) => {
 		setAllergy(value)
 	}
 
+	const handleDiseaseChange = (e) => {
+		const { value } = e.target
+		setDisease(value)
+	}
+
 	const handleAllergySubmit = async (e) => {
 		e.preventDefault()
 		try {
 			setErrorAllergy('')
 			setLoadingAllergy(true)
 			const payload = { allergy }
-			console.log('the', allergy)
 			const url = `${baseUrl}/api/add/allergy/${_id}`
 			const headers = { headers: { Authorization: token } }
 			const { data } = await axios.put(url, payload, headers)
-			console.log(data)
 			addAllergy(data)
 			setSuccessAllergy(true)
 		} catch (error) {
 			catchErrors(error, setErrorAllergy)
 		} finally {
 			setLoadingAllergy(false)
+		}
+	}
+
+	const handleDiseaseSubmit = async (e) => {
+		e.preventDefault()
+		try {
+			setErrorDisease('')
+			setLoadingDisease(true)
+			const payload = { disease }
+			const url = `${baseUrl}/api/add/disease/${_id}`
+			const headers = { headers: { Authorization: token } }
+			const { data } = await axios.put(url, payload, headers)
+			addDisease(data)
+			setSuccessDisease(true)
+		} catch (error) {
+			catchErrors(error, setErrorAllergy)
+		} finally {
+			setLoadingDisease(false)
 		}
 	}
 
@@ -173,6 +202,36 @@ const Record = ({ _id, role, addVaccine, addAllergy }) => {
 							content='Submit'
 							type='submit'
 							disabled={disabledAllergy || loadingAllergy}
+						/>
+					</Form>
+					<br />
+				</>
+			)}
+			<Diseases role={role} petId={_id} />
+			{isDoctorOrRoot && (
+				<>
+					<Form
+						onSubmit={handleDiseaseSubmit}
+						success={successDisease}
+						error={Boolean(errorDisease)}
+						loading={loadingDisease}
+					>
+						<Form.Field
+							control={Input}
+							name='disease'
+							label='Disease'
+							placeholder='Disease'
+							type='text'
+							onChange={handleDiseaseChange}
+							value={disease}
+						/>
+						<Form.Field
+							control={Button}
+							color='blue'
+							icon='pencil alternate'
+							content='Submit'
+							type='submit'
+							disabled={disabledDisease || loadingDisease}
 						/>
 					</Form>
 					<br />
