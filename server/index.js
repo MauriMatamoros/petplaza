@@ -6,9 +6,9 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
-if (process.env.NODE_ENV !== 'production') {
-	require('dotenv').config()
-}
+// if (process.env.NODE_ENV !== 'production') {
+require('dotenv').config()
+// }
 
 app.prepare().then(() => {
 	const server = express()

@@ -11,6 +11,9 @@ const Diseases = ({
 	loadingDiseases,
 	removeDisease
 }) => {
+	const isRoot = role === 'root'
+	const isDoctor = role === 'doctor'
+	const isRootOrDoctor = isRoot || isDoctor
 	const token = cookie.get('token')
 	const mapDiseases = (diseases) =>
 		diseases.map(({ _id, name }) => (
@@ -18,16 +21,15 @@ const Diseases = ({
 				<Segment textAlign='center' basic>
 					{name}
 				</Segment>
-				{role === 'doctor' ||
-					(role === 'root' && (
-						<Segment textAlign='center' basic>
-							<Button
-								negative
-								icon='delete'
-								onClick={() => removeDisease(petId, _id, token)}
-							></Button>
-						</Segment>
-					))}
+				{isRootOrDoctor && (
+					<Segment textAlign='center' basic>
+						<Button
+							negative
+							icon='delete'
+							onClick={() => removeDisease(petId, _id, token)}
+						></Button>
+					</Segment>
+				)}
 			</Segment.Group>
 		))
 	return (

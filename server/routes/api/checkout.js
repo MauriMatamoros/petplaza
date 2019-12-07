@@ -18,7 +18,6 @@ connectDb()
 
 const router = express.Router()
 
-// Bac payment would be handled here instead of Stripe's
 router.post('/checkout', auth, async (req, res) => {
 	const { paymentData } = req.body
 	try {
@@ -41,7 +40,7 @@ router.post('/checkout', auth, async (req, res) => {
 		}
 		const customer =
 			(isExistingCustomer && prevCustomer.data[0].id) || newCustomer.id
-		const charge = await stripe.charges.create(
+		await stripe.charges.create(
 			{
 				currency: 'usd',
 				amount: stripeTotal,

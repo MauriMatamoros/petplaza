@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { connect } from 'react-redux'
+import { useRouter } from 'next/router'
+import { Button } from 'semantic-ui-react'
 
 import baseUrl from '../../utils/baseUrl'
 import { setPet, setRecord } from '../../redux/actions/pet'
@@ -8,7 +10,11 @@ import PetInformation from '../../components/Pet/PetInformation'
 import Record from '../../components/Pet/Record'
 
 const Pet = ({ _id, owner, user }) => {
+	const router = useRouter()
 	const isOwner = owner === user._id
+	const isRoot = user.role === 'root'
+	const isDoctor = user.role === 'doctor'
+	const isRootOrDoctor = isRoot || isDoctor
 	return (
 		<>
 			{isOwner ? (
@@ -16,6 +22,13 @@ const Pet = ({ _id, owner, user }) => {
 			) : (
 				<>
 					<PetInformation />
+				</>
+			)}
+			{isRootOrDoctor && (
+				<>
+					<Button primary fluid onClick={() => router.push('/checkup')}>
+						Create a Checkup
+					</Button>
 				</>
 			)}
 			<br />

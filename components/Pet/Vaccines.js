@@ -12,6 +12,9 @@ const Vaccines = ({
 	loadingVaccines,
 	removeVaccine
 }) => {
+	const isRoot = role === 'root'
+	const isDoctor = role === 'doctor'
+	const isRootOrDoctor = isRoot || isDoctor
 	const token = cookie.get('token')
 	const mapVaccines = (vaccines) =>
 		vaccines.map(({ _id, name, date }) => (
@@ -22,16 +25,15 @@ const Vaccines = ({
 				<Segment textAlign='center' basic>
 					{format(Date.parse(date), 'dd/MM/yyyy')}
 				</Segment>
-				{role === 'doctor' ||
-					(role === 'root' && (
-						<Segment textAlign='center' basic>
-							<Button
-								negative
-								icon='delete'
-								onClick={() => removeVaccine(petId, _id, token)}
-							></Button>
-						</Segment>
-					))}
+				{isRootOrDoctor && (
+					<Segment textAlign='center' basic>
+						<Button
+							negative
+							icon='delete'
+							onClick={() => removeVaccine(petId, _id, token)}
+						></Button>
+					</Segment>
+				)}
 			</Segment.Group>
 		))
 	return (
