@@ -87,7 +87,7 @@ router.put('/add/vaccine/:id', auth, async (req, res) => {
 		const isDoctorOrRoot = isRoot || isDoctor
 		const { name, date } = req.body
 		if (!isDoctorOrRoot) {
-			return res.send(401).send('Not enough permissions.')
+			return res.status(401).send('Not enough permissions.')
 		}
 		const record = await Record.findOneAndUpdate(
 			{ pet: req.params.id },
@@ -108,7 +108,7 @@ router.put('/add/allergy/:id', auth, async (req, res) => {
 		const isDoctorOrRoot = isRoot || isDoctor
 		const { allergy } = req.body
 		if (!isDoctorOrRoot) {
-			return res.send(401).send('Not enough permissions.')
+			return res.status(401).send('Not enough permissions.')
 		}
 		const record = await Record.findOneAndUpdate(
 			{ pet: req.params.id },
@@ -129,7 +129,7 @@ router.put('/add/disease/:id', auth, async (req, res) => {
 		const isDoctorOrRoot = isRoot || isDoctor
 		const { disease } = req.body
 		if (!isDoctorOrRoot) {
-			return res.send(401).send('Not enough permissions.')
+			return res.status(401).send('Not enough permissions.')
 		}
 		const record = await Record.findOneAndUpdate(
 			{ pet: req.params.id },
@@ -149,7 +149,7 @@ router.delete('/pet/:petId/disease/:diseaseId', auth, async (req, res) => {
 		const isDoctor = req.user.role === 'doctor'
 		const isDoctorOrRoot = isRoot || isDoctor
 		if (!isDoctorOrRoot) {
-			return res.send(401).send('Not enough permissions.')
+			return res.status(401).send('Not enough permissions.')
 		}
 		await Record.findOneAndUpdate(
 			{ pet: req.params.petId },
@@ -168,7 +168,7 @@ router.delete('/pet/:petId/allergy/:allergyId', auth, async (req, res) => {
 		const isDoctor = req.user.role === 'doctor'
 		const isDoctorOrRoot = isRoot || isDoctor
 		if (!isDoctorOrRoot) {
-			return res.send(401).send('Not enough permissions.')
+			return res.sstatus(401).send('Not enough permissions.')
 		}
 		await Record.findOneAndUpdate(
 			{ pet: req.params.petId },
@@ -187,7 +187,7 @@ router.delete('/pet/:petId/vaccine/:vaccineId', auth, async (req, res) => {
 		const isDoctor = req.user.role === 'doctor'
 		const isDoctorOrRoot = isRoot || isDoctor
 		if (!isDoctorOrRoot) {
-			return res.send(401).send('Not enough permissions.')
+			return res.status(401).send('Not enough permissions.')
 		}
 		await Record.findOneAndUpdate(
 			{ pet: req.params.petId },
@@ -231,6 +231,86 @@ router.put('/pet/profilePicture/:_id', auth, async (req, res) => {
 		res
 			.status(500)
 			.send('Server error. Please try setting your profile picture later.')
+	}
+})
+
+router.post('/checkup', auth, async (req, res) => {
+	try {
+		const isRoot = req.user.role === 'root'
+		const isDoctor = req.user.role === 'doctor'
+		const isNeitherRootOrDoctor = !isRoot && !isDoctor
+		if (isNeitherRootOrDoctor) {
+			return res.status(401).send('Not enough privilages.')
+		}
+		const { pet, diagnostic, observations, medicines } = req.body
+		const checkup = await new CheckUp({
+			pet,
+			diagnostic,
+			observations,
+			medicines
+		}).save()
+		res.status(201).json({ checkup })
+	} catch (error) {
+		res.status(500).send('Server error. Please try creating Checkup later.')
+	}
+})
+
+router.get('/checkups/:_id', auth, async (req, res) => {
+	try {
+		const { page, size } = req.query
+		const pageNumber = Number(page)
+		const pageSize = Number(size)
+		const totalDocs = await CheckUp.countDocuments({ pet: req.params._id })
+		const totalPages = Math.ceil(totalDocs / pageSize)
+		let checkups = []
+		if (pageNumber === 1) {
+			checkups = await CheckUp.find({ pet: req.params._id })
+				.limit(pageSize)
+				.sort({ createdAt: 'desc' })
+		} else {
+			const skips = pageSize * (pageNumber - 1)
+			checkups = await CheckUp.find({ pet: req.params._id })
+				.skip(skips)
+				.limit(pageSize)
+				.sort({ createdAt: 'desc' })
+		}
+		res.status(200).json({ checkups, totalPages })
+	} catch (error) {
+		console.error(error)
+		res.status(403).send('Please log in again.')
+	}
+})
+
+router.get('/checkup/:_id', auth, async (req, res) => {
+	try {
+		const checkup = await CheckUp.findById(
+			mongoose.Types.ObjectId(req.params._id)
+		).populate({
+			path: 'pet',
+			model: 'Pet'
+		})
+		res.status(200).json({ checkup })
+	} catch (error) {
+		console.error(error)
+		res.status(403).send('Please log in again.')
+	}
+})
+
+router.delete('/checkups/:_id', auth, async (req, res) => {
+	try {
+		const isRoot = req.user.role === 'root'
+		const isDoctor = req.user.role === 'doctor'
+		const isDoctorOrRoot = isRoot || isDoctor
+		if (!isDoctorOrRoot) {
+			return res.status(401).send('Not enough permissions.')
+		}
+		const checkup = await CheckUp.findByIdAndRemove(
+			mongoose.Types.ObjectId(req.params._id)
+		)
+		res.status(201).json({ checkup })
+	} catch (error) {
+		console.error(error)
+		res.status(500).send('Server error.')
 	}
 })
 

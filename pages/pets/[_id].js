@@ -2,12 +2,15 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import { useRouter } from 'next/router'
 import { Button } from 'semantic-ui-react'
+import { parseCookies } from 'nookies'
 
 import baseUrl from '../../utils/baseUrl'
 import { setPet, setRecord } from '../../redux/actions/pet'
 import PetForm from '../../components/Pet/PetForm'
 import PetInformation from '../../components/Pet/PetInformation'
 import Record from '../../components/Pet/Record'
+import Checkups from '../../components/Pet/Checkups'
+import { setInitialCheckups } from '../../redux/actions/checkup'
 
 const Pet = ({ _id, owner, user }) => {
 	const router = useRouter()
@@ -24,6 +27,7 @@ const Pet = ({ _id, owner, user }) => {
 					<PetInformation />
 				</>
 			)}
+			<Checkups />
 			{isRootOrDoctor && (
 				<>
 					<Button primary fluid onClick={() => router.push('/checkup')}>
@@ -37,13 +41,28 @@ const Pet = ({ _id, owner, user }) => {
 	)
 }
 
-Pet.getInitialProps = async ({ reduxStore: { dispatch }, query: { _id } }) => {
-	const url = `${baseUrl}/api/pet/${_id}`
+Pet.getInitialProps = async (ctx) => {
+	const { token } = parseCookies(ctx)
+	if (!token) {
+		return { checkups: [], pageNumber: 0 }
+	}
+	const _id = ctx.query._id
+	let url = `${baseUrl}/api/pet/${_id}`
 	const {
 		data: { pet, record }
 	} = await axios.get(url)
-	dispatch(setPet(pet))
-	dispatch(setRecord(record))
+	ctx.reduxStore.dispatch(setPet(pet))
+	ctx.reduxStore.dispatch(setRecord(record))
+	const {
+		checkup: { pageSize }
+	} = ctx.reduxStore.getState()
+	const payload = {
+		headers: { Authorization: token },
+		params: { page: 1, size: pageSize }
+	}
+	url = `${baseUrl}/api/checkups/${_id}`
+	const response = await axios.get(url, payload)
+	ctx.reduxStore.dispatch(setInitialCheckups(response.data))
 	return {
 		_id,
 		owner: pet.owner

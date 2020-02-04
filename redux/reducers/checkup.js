@@ -1,9 +1,11 @@
 import {
-	CREATE_CHECKUP,
-	UPDATE_CHECKUP,
-	CHECKUP_ERROR,
-	START_UPDATE_CHECKUP,
-	REMOVE_CHECKUP
+	START_REMOVE_CHECKUP,
+	REMOVE_CHECKUP,
+	SET_CHECKUP,
+	CHANGE_CHECKUP_PAGE,
+	START_CHANGE_CHECKUP_PAGE,
+	DEFAULT_CHECKUP_SETTINGS,
+	SET_INITIAL_CHECKUPS
 } from '../actions/types'
 
 const initialState = {
@@ -20,8 +22,42 @@ const initialState = {
 export default (state = initialState, action) => {
 	const { type, payload } = action
 	switch (type) {
-		case CREATE_CHECKUP:
-			return {}
+		case SET_CHECKUP:
+			return {
+				...state,
+				checkup: payload
+			}
+		case SET_INITIAL_CHECKUPS:
+			return {
+				...state,
+				...payload,
+				error: null,
+				loading: false
+			}
+		case START_CHANGE_CHECKUP_PAGE:
+			return {
+				...state,
+				loading: true,
+				error: null
+			}
+		case CHANGE_CHECKUP_PAGE:
+			return {
+				...state,
+				...payload,
+				loading: false,
+				error: null
+			}
+		case CHANGE_CHECKUP_PAGE:
+			return {
+				...state,
+				loadingForm: true,
+				error: null
+			}
+		case DEFAULT_CHECKUP_SETTINGS: {
+			return {
+				...initialState
+			}
+		}
 		default:
 			return state
 	}

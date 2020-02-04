@@ -9,8 +9,12 @@ import {
 } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import cookie from 'js-cookie'
+import axios from 'axios'
 
-const CreateCheckup = ({ loading, error, success }) => {
+import baseUrl from '../../utils/baseUrl'
+import catchErrors from '../../utils/catchErrors'
+
+const CreateCheckup = ({ pet }) => {
 	const INITIAL_CHECKUP = {
 		diagnostic: '',
 		observations: '',
@@ -18,6 +22,9 @@ const CreateCheckup = ({ loading, error, success }) => {
 	}
 	const [checkup, setCheckup] = useState(INITIAL_CHECKUP)
 	const [disabled, setDisabled] = useState(false)
+	const [success, setSuccess] = useState(false)
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState('')
 
 	useEffect(() => {
 		const isCheckup = Object.values(checkup).every((element) =>
@@ -34,7 +41,24 @@ const CreateCheckup = ({ loading, error, success }) => {
 		}))
 	}
 
-	const handleSubmit = () => {}
+	const handleSubmit = async () => {
+		try {
+			setLoading(true)
+			const url = `${baseUrl}/api/checkup`
+			const token = cookie.get('token')
+			const headers = {
+				headers: { Authorization: token }
+			}
+			const payload = { ...checkup, pet }
+			const { data } = await axios.post(url, payload, headers)
+			setSuccess(true)
+		} catch (error) {
+			console.error(error)
+			catchErrors(error, setError)
+		} finally {
+			setLoading(false)
+		}
+	}
 	return (
 		<>
 			<Header as='h2' block>
@@ -51,7 +75,7 @@ const CreateCheckup = ({ loading, error, success }) => {
 					success
 					icon='check'
 					header='Success!'
-					content='Your product has been posted.'
+					content='Your CheckUp has been created.'
 				/>
 				<Message error header='Oops!' content={error} />
 				<Form.Field
@@ -94,10 +118,8 @@ const CreateCheckup = ({ loading, error, success }) => {
 	)
 }
 
-const mapStateToProps = ({ checkup: { loadingForm, error, success } }) => ({
-	loading: loadingForm,
-	error,
-	success
+const mapStateToProps = ({ pet: { pet } }) => ({
+	pet
 })
 
 export default connect(mapStateToProps, {})(CreateCheckup)
